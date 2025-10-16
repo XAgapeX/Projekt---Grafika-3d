@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.16)
 project(PROJEKT2_0)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -6,15 +6,25 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(CMAKE_PREFIX_PATH "C:/Qt/6.9.1/mingw_64/lib/cmake")
+
+if (WIN32)
+    set(CMAKE_PREFIX_PATH "C:/Qt/6.9.1/mingw_64/lib/cmake")
+endif()
+
+
+if (UNIX AND NOT APPLE)
+    set(CMAKE_PREFIX_PATH "/home/damiand/Qt/6.9.1/gcc_64/lib/cmake")
+endif()
 
 find_package(Qt6 COMPONENTS
         Core
         Gui
         Widgets
-        REQUIRED)
+        REQUIRED
+)
 
 add_executable(PROJEKT2_0 main.cpp)
+
 target_link_libraries(PROJEKT2_0
         Qt::Core
         Qt::Gui
@@ -48,4 +58,4 @@ if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
                 "${QT_INSTALL_PATH}/bin/Qt6${QT_LIB}${DEBUG_SUFFIX}.dll"
                 "$<TARGET_FILE_DIR:${PROJECT_NAME}>")
     endforeach (QT_LIB)
-endif ()
+endif()
