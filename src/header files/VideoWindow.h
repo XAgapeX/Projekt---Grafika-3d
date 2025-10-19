@@ -1,5 +1,6 @@
 #pragma once
 #include <QWidget>
+#include <QAudioOutput>
 
 class QVideoWidget;
 class QMediaPlayer;
@@ -18,4 +19,5 @@ private:
     QMediaPlayer *player;
     QVideoWidget *videoWidget;
     QPushButton *loadButton;
+    QAudioOutput *audioOutput;
 };

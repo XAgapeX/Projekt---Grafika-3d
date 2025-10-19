@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QMediaPlayer>
 #include <QVideoWidget>
+#include <QAudioOutput>
 
 VideoWindow::VideoWindow(QWidget *parent)
     : QWidget(parent)
@@ -13,7 +14,11 @@ VideoWindow::VideoWindow(QWidget *parent)
 
     player = new QMediaPlayer(this);
     videoWidget = new QVideoWidget(this);
+
+    audioOutput = new QAudioOutput(this);
     player->setVideoOutput(videoWidget);
+    player->setAudioOutput(audioOutput);
+    audioOutput->setVolume(50);
 
     loadButton = new QPushButton("Wybierz film", this);
 
