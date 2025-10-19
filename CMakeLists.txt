@@ -6,11 +6,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-
 if (WIN32)
     set(CMAKE_PREFIX_PATH "C:/Qt/6.9.1/mingw_64/lib/cmake")
 endif()
-
 
 if (UNIX AND NOT APPLE)
     set(CMAKE_PREFIX_PATH "/home/damiand/Qt/6.9.1/gcc_64/lib/cmake")
@@ -20,15 +18,24 @@ find_package(Qt6 COMPONENTS
         Core
         Gui
         Widgets
+        Multimedia
+        MultimediaWidgets
         REQUIRED
 )
 
-add_executable(PROJEKT2_0 main.cpp)
+add_executable(PROJEKT2_0 src/main.cpp resources.qrc
+        "src/source files/MainWindow.cpp"
+        "src/header files/MainWindow.h"
+        "src/source files/VideoWindow.cpp"
+        "src/header files/VideoWindow.h"
+)
 
 target_link_libraries(PROJEKT2_0
         Qt::Core
         Qt::Gui
         Qt::Widgets
+        Qt::Multimedia
+        Qt::MultimediaWidgets
 )
 
 if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
