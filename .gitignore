@@ -9,7 +9,6 @@ Makefile
 *.cmake
 *.cbp
 *.moc
-*.qrc
 *.qmake.stash
 *.pro.user
 .pro.user.

@@ -2,7 +2,6 @@
 #include "../header files/VideoWindow.h"
 #include <QPushButton>
 #include <QLabel>
-#include <QVBoxLayout>
 #include <QHBoxLayout>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -59,9 +58,21 @@ MainWindow::MainWindow(QWidget *parent)
         }
     )");
 
+    QLabel *authorsLabelFooter = new QLabel(this);
+    authorsLabelFooter->setText("Damiand Kowalczyk, Kacper Kowalczyk");
+    authorsLabelFooter->setAlignment(Qt::AlignCenter);
+    authorsLabelFooter->setStyleSheet(R"(
+        Qlabel {
+            font-size: 12px;
+            font-weight: bold;
+            color: #000;
+            background-color: transparent;
+        }
+    )");
+
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(15);
+    layout->setSpacing(25);
     layout->addWidget(iconLabel);
     layout->addWidget(label);
 
@@ -70,6 +81,7 @@ MainWindow::MainWindow(QWidget *parent)
     buttonLayout->setContentsMargins(0, 0, 0, 0);
     buttonLayout->addWidget(openButton, 0, Qt::AlignCenter);
     layout->addWidget(buttonWrapper);
+    layout->addWidget(authorsLabelFooter);
 
     layout->setAlignment(Qt::AlignCenter);
 
