@@ -1,6 +1,6 @@
 #pragma once
 #include <QWidget>
-
+#include <QStackedWidget>
 class QPushButton;
 class VideoWindow;
 
@@ -10,10 +10,8 @@ class MainWindow : public QWidget {
 public:
     explicit MainWindow(QWidget *parent = nullptr);
 
-private slots:
-    void openVideoWindow();
-
 private:
     QPushButton *openButton;
     VideoWindow *videoWindow;
+    QStackedWidget *stackedWidget;
 };

@@ -9,9 +9,6 @@
 VideoWindow::VideoWindow(QWidget *parent)
     : QWidget(parent)
 {
-    setWindowTitle("Odtwarzacz wideo");
-    resize(640, 480);
-
     player = new QMediaPlayer(this);
     videoWidget = new QVideoWidget(this);
 
@@ -20,7 +17,7 @@ VideoWindow::VideoWindow(QWidget *parent)
     player->setAudioOutput(audioOutput);
     audioOutput->setVolume(50);
 
-    loadButton = new QPushButton("Wybierz film", this);
+    loadButton = new QPushButton("Choose file", this);
 
     auto *layout = new QVBoxLayout(this);
     layout->addWidget(videoWidget);
