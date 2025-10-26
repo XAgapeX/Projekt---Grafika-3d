@@ -1,23 +1,18 @@
 #pragma once
 #include <QWidget>
+#include <QMediaPlayer>
+#include <QVideoWidget>
 #include <QAudioOutput>
-
-class QVideoWidget;
-class QMediaPlayer;
-class QPushButton;
 
 class VideoWindow : public QWidget {
     Q_OBJECT
-
 public:
     explicit VideoWindow(QWidget *parent = nullptr);
 
-private slots:
     void loadVideo();
 
 private:
     QMediaPlayer *player;
     QVideoWidget *videoWidget;
-    QPushButton *loadButton;
     QAudioOutput *audioOutput;
 };

@@ -8,11 +8,11 @@
 #include <QPixmap>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QWidget(parent)
-{
+    : QWidget(parent) {
     setWindowTitle("Video Player");
     setWindowIcon(QIcon(":/resources/icons/play.png"));
     resize(1200, 800);
+    setStyleSheet("background-color: #f5f5f5;");
 
     QLabel *iconLabel = new QLabel(this);
     QPixmap pixmap(":/resources/icons/play.png");
@@ -23,8 +23,10 @@ MainWindow::MainWindow(QWidget *parent)
     label->setAlignment(Qt::AlignCenter);
     label->setStyleSheet("font-size: 24px; font-weight: bold; color: #21618c;");
 
-    openButton = new QPushButton("Open", this);
+    openButton = new QPushButton("Open Video", this);
     openButton->setFixedSize(120, 40);
+    openButton->setStyleSheet(
+        "background-color: #21618c; color: white; border-radius: 5px; font-size: 16px; font-weight: bold;");
 
     QVBoxLayout *headerLayout = new QVBoxLayout();
     headerLayout->addWidget(iconLabel);
@@ -50,7 +52,8 @@ MainWindow::MainWindow(QWidget *parent)
     mainLayout->addWidget(stackedWidget);
     setLayout(mainLayout);
 
-    connect(openButton, &QPushButton::clicked, this, [this](){
+    connect(openButton, &QPushButton::clicked, this, [this]() {
         stackedWidget->setCurrentWidget(videoWindow);
+        videoWindow->loadVideo();
     });
 }
