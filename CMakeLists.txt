@@ -23,6 +23,12 @@ find_package(Qt6 COMPONENTS
         REQUIRED
 )
 
+if (WIN32)
+    set(CMAKE_PREFIX_PATH  " ") #TODO tu musisz wpisac scierzke z folderu z opencv
+endif()
+
+find_package(OpenCV REQUIRED)
+
 add_executable(PROJEKT2_0 src/main.cpp resources.qrc
         "src/source files/MainWindow.cpp"
         "src/header files/MainWindow.h"
@@ -36,7 +42,11 @@ target_link_libraries(PROJEKT2_0
         Qt::Widgets
         Qt::Multimedia
         Qt::MultimediaWidgets
+        ${OpenCV_LIBS}
 )
+
+target_include_directories(PROJEKT2_0 PRIVATE ${OpenCV_INCLUDE_DIRS})
+
 
 if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     set(DEBUG_SUFFIX)
