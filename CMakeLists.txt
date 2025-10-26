@@ -34,6 +34,10 @@ add_executable(PROJEKT2_0 src/main.cpp resources.qrc
         "src/header files/MainWindow.h"
         "src/source files/VideoWindow.cpp"
         "src/header files/VideoWindow.h"
+        "src/source files/ToolBar.cpp"
+        "src/header files/ToolBar.h"
+        "src/source files/ControlBar.cpp"
+        "src/header files/ControlBar.h"
 )
 
 target_link_libraries(PROJEKT2_0
