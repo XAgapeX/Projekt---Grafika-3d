@@ -24,7 +24,7 @@ find_package(Qt6 COMPONENTS
 )
 
 if (WIN32)
-    set(CMAKE_PREFIX_PATH  " ") #TODO tu musisz wpisac scierzke z folderu z opencv
+    set(OpenCV_DIR " ") #TODO tu musisz wpisac scierzke z folderu z opencv
 endif()
 
 find_package(OpenCV REQUIRED)
