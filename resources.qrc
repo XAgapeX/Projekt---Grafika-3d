@@ -2,4 +2,16 @@
     <qresource prefix="/">
         <file>resources/icons/play.png</file>
     </qresource>
+    <qresource prefix="/">
+        <file>resources/icons/pause.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>resources/icons/volume.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>resources/icons/refersh.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>resources/icons/play-button-arrowhead.png</file>
+    </qresource>
 </RCC>

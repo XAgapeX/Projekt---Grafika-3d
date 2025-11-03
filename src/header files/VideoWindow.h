@@ -1,4 +1,7 @@
 #pragma once
+#include <../../../src/header files/ToolBar.h>
+#include <../../../src/header files/ControlBar.h>
+
 #include <QWidget>
 #include <QMediaPlayer>
 #include <QVideoWidget>
@@ -15,4 +18,6 @@ private:
     QMediaPlayer *player;
     QVideoWidget *videoWidget;
     QAudioOutput *audioOutput;
+    ToolBar *toolBar;
+    ControlBar *controlBar;
 };

@@ -8,10 +8,12 @@
 #include <QPixmap>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QWidget(parent) {
+    : QWidget(parent)
+{
     setWindowTitle("Video Player");
     setWindowIcon(QIcon(":/resources/icons/play.png"));
     resize(1200, 800);
+
     setStyleSheet("background-color: #f5f5f5;");
 
     QLabel *iconLabel = new QLabel(this);
@@ -29,28 +31,43 @@ MainWindow::MainWindow(QWidget *parent)
         "background-color: #21618c; color: white; border-radius: 5px; font-size: 16px; font-weight: bold;");
 
     QVBoxLayout *headerLayout = new QVBoxLayout();
-    headerLayout->addWidget(iconLabel);
-    headerLayout->addWidget(label);
+    headerLayout->setContentsMargins(0,0,0,0);
+    headerLayout->setSpacing(10);
+    headerLayout->addWidget(iconLabel, 0, Qt::AlignCenter);
+    headerLayout->addWidget(label, 0, Qt::AlignCenter);
     headerLayout->addWidget(openButton, 0, Qt::AlignCenter);
 
     QWidget *headerWidget = new QWidget(this);
     headerWidget->setLayout(headerLayout);
+    headerWidget->setStyleSheet("background-color: #f5f5f5;");
+
 
     stackedWidget = new QStackedWidget(this);
 
+
     QWidget *homeWidget = new QWidget(this);
+    homeWidget->setStyleSheet("background-color: #f5f5f5;");
     QVBoxLayout *homeLayout = new QVBoxLayout(homeWidget);
+    homeLayout->setContentsMargins(0,0,0,0);
+    homeLayout->setSpacing(0);
     homeLayout->addWidget(headerWidget, 0, Qt::AlignCenter);
     homeWidget->setLayout(homeLayout);
 
+
     videoWindow = new VideoWindow(this);
+    videoWindow->setStyleSheet("background-color: black;");
+
 
     stackedWidget->addWidget(homeWidget);
     stackedWidget->addWidget(videoWindow);
 
+
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    mainLayout->setContentsMargins(0,0,0,0);
+    mainLayout->setSpacing(0);
     mainLayout->addWidget(stackedWidget);
     setLayout(mainLayout);
+
 
     connect(openButton, &QPushButton::clicked, this, [this]() {
         stackedWidget->setCurrentWidget(videoWindow);
