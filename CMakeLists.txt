@@ -23,7 +23,7 @@ find_package(Qt6 COMPONENTS
 )
 
 if (WIN32)
-    set(OpenCV_DIR "C:/Users/Katarzyna/Documents/OpenCV/opencv/build/x64/vc15/lib") #TODO tu musisz wpisac scierzke z folderu z opencv
+    set(OpenCV_DIR "C:/Users/Katarzyna/Documents/OpenCV/opencv/build/x64/vc15/lib")
 endif()
 
 find_package(OpenCV REQUIRED)
