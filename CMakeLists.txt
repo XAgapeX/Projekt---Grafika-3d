@@ -1,21 +1,21 @@
 cmake_minimum_required(VERSION 3.18)
 project(PROJEKT2_0 LANGUAGES CXX CUDA)
+enable_language(CUDA)
 
-# --- Standardy ---
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# --- Ścieżka do Qt ---
+
 if (WIN32)
     set(CMAKE_PREFIX_PATH "C:/Qt/6.9.1/msvc2022_64/lib/cmake")
 elseif (UNIX AND NOT APPLE)
     set(CMAKE_PREFIX_PATH "/home/damiand/Qt/6.9.1/gcc_64/lib/cmake")
 endif()
 
-# --- Qt6 ---
 find_package(Qt6 COMPONENTS
         Core
         Gui
@@ -25,17 +25,21 @@ find_package(Qt6 COMPONENTS
         REQUIRED
 )
 
-# --- OpenCV (jeśli używasz) ---
+
 if (WIN32)
     set(OpenCV_DIR "C:/Users/Katarzyna/Documents/OpenCV/opencv/build/x64/vc15/lib")
 endif()
 find_package(OpenCV REQUIRED)
 
-# --- CUDA ---
-find_package(CUDAToolkit REQUIRED)
-set(CMAKE_CUDA_ARCHITECTURES 52 86)  # Maxwell + Ampere
 
-# --- Pliki projektu ---
+find_package(CUDAToolkit REQUIRED)
+if (WIN32)
+    set(CMAKE_CUDA_ARCHITECTURES 52)
+else()
+    set(CMAKE_CUDA_ARCHITECTURES 86)
+endif()
+
+
 add_executable(PROJEKT2_0
         src/main.cpp
         resources.qrc
@@ -54,15 +58,17 @@ add_executable(PROJEKT2_0
 
         "src/opencv/source files/SenderOpenCV.cpp"
         "src/opencv/header files/SenderOpenCV.h"
+
+        "src/cuda/test.cu"
 )
 
-# --- Include'y ---
+
 target_include_directories(PROJEKT2_0 PRIVATE
         ${OpenCV_INCLUDE_DIRS}
         ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
 )
 
-# --- Linkowanie ---
+
 target_link_libraries(PROJEKT2_0 PRIVATE
         Qt::Core
         Qt::Gui
@@ -73,17 +79,17 @@ target_link_libraries(PROJEKT2_0 PRIVATE
         CUDA::cudart
 )
 
-# --- Windows: kopiowanie pluginów, bibliotek i CUDA ---
+
 if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     set(DEBUG_SUFFIX)
     if (CMAKE_BUILD_TYPE MATCHES "Debug")
         set(DEBUG_SUFFIX "d")
     endif()
 
-    # --- Główna ścieżka do instalacji Qt ---
+
     set(QT_BASE_PATH "C:/Qt/6.9.1/msvc2022_64")
 
-    # --- Kopiowanie platform plugin (qwindows.dll) ---
+
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E make_directory
             "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/platforms/"
@@ -94,7 +100,7 @@ if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
             "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/platforms/"
     )
 
-    # --- Kopiowanie pluginu ffmpeg (Qt Multimedia) ---
+
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E make_directory
             "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/multimedia/"
@@ -105,7 +111,7 @@ if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
             "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/multimedia/"
     )
 
-    # --- Kopiowanie bibliotek Qt ---
+
     foreach(QT_LIB Core Gui Widgets Multimedia MultimediaWidgets Network)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -114,7 +120,7 @@ if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
         )
     endforeach()
 
-    # --- Kopiowanie bibliotek CUDA ---
+
     set(CUDA_BIN_DIR "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.0/bin")
     foreach(CUDA_DLL cudart64_130.dll)
         if (EXISTS "${CUDA_BIN_DIR}/${CUDA_DLL}")
@@ -125,7 +131,7 @@ if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
         endif()
     endforeach()
 
-    # --- Ustawienie ścieżek pluginów Qt ---
+
     set_target_properties(${PROJECT_NAME} PROPERTIES
             VS_DEBUGGER_ENVIRONMENT
             "PATH=C:/Qt/6.9.1/msvc2022_64/bin;%PATH%;
