@@ -15,6 +15,8 @@ public:
 
 signals:
     void openAnotherVideoClicked();
+    void grayscaleFilterClicked();
+
 
 private:
     QPushButton *openTest;

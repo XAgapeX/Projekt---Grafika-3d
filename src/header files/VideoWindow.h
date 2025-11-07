@@ -1,23 +1,37 @@
 #pragma once
-#include <../../../src/header files/ToolBar.h>
-#include <../../../src/header files/ControlBar.h>
+#include "../header files/ToolBar.h"
+#include "../header files/ControlBar.h"
+#include "../cuda/grayscale.cuh"
 
 #include <QWidget>
 #include <QMediaPlayer>
-#include <QVideoWidget>
+#include <QVideoSink>
 #include <QAudioOutput>
+#include <QLabel>
+#include <QVideoFrame>
+#include <QImage>
 
 class VideoWindow : public QWidget {
     Q_OBJECT
 public:
     explicit VideoWindow(QWidget *parent = nullptr);
-
     void loadVideo();
+
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
+private slots:
+    void applyGrayscaleFilter();
+    void onFrameAvailable(const QVideoFrame &frame);
 
 private:
     QMediaPlayer *player;
-    QVideoWidget *videoWidget;
     QAudioOutput *audioOutput;
+    QVideoSink *videoSink;
+    QLabel *videoLabel;
     ToolBar *toolBar;
     ControlBar *controlBar;
+
+    bool grayscaleActive = false;
+    QImage lastFrame;
 };

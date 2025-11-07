@@ -21,6 +21,7 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
 
 
     QPushButton *filter1 = new QPushButton("Grayscale", this);
+    connect(filter1, &QPushButton::clicked, this, &ToolBar::grayscaleFilterClicked);
     QPushButton *filter2 = new QPushButton("Gaussian Blur", this);
     QPushButton *filter3 = new QPushButton("Sepia", this);
     QPushButton *filter4 = new QPushButton("Negative", this);
