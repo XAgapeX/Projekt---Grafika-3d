@@ -59,7 +59,7 @@ add_executable(PROJEKT2_0
         "src/opencv/source files/SenderOpenCV.cpp"
         "src/opencv/header files/SenderOpenCV.h"
 
-        "src/cuda/test.cu"
+        "src/cuda/greyscale.cu"
 )
 
 
