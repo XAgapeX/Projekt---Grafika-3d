@@ -27,14 +27,14 @@ find_package(Qt6 COMPONENTS
 
 
 if (WIN32)
-    set(OpenCV_DIR "C:/Users/Katarzyna/Documents/OpenCV/opencv/build/x64/vc15/lib")
+    set(OpenCV_DIR "C:/Users/dell/Documents/opencv/build/x64/vc15/lib")
 endif()
 find_package(OpenCV REQUIRED)
 
 
 find_package(CUDAToolkit REQUIRED)
 if (WIN32)
-    set(CMAKE_CUDA_ARCHITECTURES 52)
+    set(CMAKE_CUDA_ARCHITECTURES 75)
 else()
     set(CMAKE_CUDA_ARCHITECTURES 86)
 endif()

@@ -1,6 +1,7 @@
 #include "../header files/VideoWindow.h"
 #include "../header files/ToolBar.h"
 #include "../header files/ControlBar.h"
+#include "../cuda/grayscale.cuh"   // ✅ include your CUDA header
 
 #include <QFileDialog>
 #include <QVBoxLayout>
@@ -8,9 +9,11 @@
 #include <QScreen>
 #include <QGuiApplication>
 #include <QResizeEvent>
+#include <QDebug>
 
 VideoWindow::VideoWindow(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent),
+      grayscaleActive(false)
 {
     player = new QMediaPlayer(this);
     audioOutput = new QAudioOutput(this);
@@ -58,6 +61,7 @@ void VideoWindow::loadVideo() {
 
 void VideoWindow::applyGrayscaleFilter() {
     grayscaleActive = !grayscaleActive;
+    qDebug() << "Grayscale filter:" << (grayscaleActive ? "ON" : "OFF");
 }
 
 void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
@@ -72,12 +76,12 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
 
     if (grayscaleActive) {
         QImage gray(img.width(), img.height(), QImage::Format_Grayscale8);
-        applyGrayscaleCUDA(img.bits(), gray.bits(), img.width(), img.height());
+
+        applyGrayscaleCUDA(img.bits(), gray.bits(), img.width(), img.height(), img.bytesPerLine());
         lastFrame = gray;
     } else {
         lastFrame = img;
     }
-
 
     QPixmap scaledPixmap = QPixmap::fromImage(lastFrame).scaled(
         videoLabel->size(),
@@ -86,7 +90,6 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
     );
     videoLabel->setPixmap(scaledPixmap);
 }
-
 
 void VideoWindow::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
