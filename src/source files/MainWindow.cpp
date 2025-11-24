@@ -7,6 +7,7 @@
 #include <QStackedWidget>
 #include <QPixmap>
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {

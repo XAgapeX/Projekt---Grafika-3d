@@ -100,6 +100,7 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
         lastFrame = img;
     }
 
+
     QPixmap scaledPixmap = QPixmap::fromImage(lastFrame).scaled(
         videoLabel->size(),
         Qt::KeepAspectRatio,

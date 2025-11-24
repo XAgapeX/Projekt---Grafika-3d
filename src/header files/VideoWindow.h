@@ -11,6 +11,7 @@
 #include <QVideoFrame>
 #include <QImage>
 
+
 class VideoWindow : public QWidget {
     Q_OBJECT
 public:

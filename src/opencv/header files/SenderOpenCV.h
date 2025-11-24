@@ -10,5 +10,4 @@ class SenderOpenCV {
 };
 
 
-
 #endif //SENDEROPENCV_H

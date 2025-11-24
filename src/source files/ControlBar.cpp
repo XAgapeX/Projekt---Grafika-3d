@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QSlider>
 
+
 ControlBar::ControlBar(QMediaPlayer *player, QWidget *parent)
     : QWidget(parent), player(player)
 {

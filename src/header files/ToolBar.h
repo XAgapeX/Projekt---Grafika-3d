@@ -5,6 +5,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
+
 class VideoWindow;
 
 class ToolBar : public QWidget {

@@ -2,6 +2,7 @@
 #include <QLabel>
 #include <QPalette>
 
+
 ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     setAttribute(Qt::WA_StyledBackground, true);
     setStyleSheet("ToolBar { background-color: #21618c !important; }");

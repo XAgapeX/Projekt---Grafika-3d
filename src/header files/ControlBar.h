@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QMediaPlayer>
 
+
 class ControlBar : public QWidget
 {
     Q_OBJECT

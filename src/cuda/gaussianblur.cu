@@ -32,6 +32,7 @@ void generateGaussianKernel() {
                        KERNEL_SIZE * KERNEL_SIZE * sizeof(float));
 }
 
+
 __global__
 void gaussianBlurKernel(const uchar* input, uchar* output,
                         int width, int height, int pitch)
