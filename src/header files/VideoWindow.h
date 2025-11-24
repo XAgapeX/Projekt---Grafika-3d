@@ -33,5 +33,6 @@ private:
     ControlBar *controlBar;
 
     bool grayscaleActive = false;
+    bool gaussianActive = false;
     QImage lastFrame;
 };

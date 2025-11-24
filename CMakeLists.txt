@@ -60,14 +60,14 @@ add_executable(PROJEKT2_0
         "src/opencv/header files/SenderOpenCV.h"
 
         "src/cuda/greyscale.cu"
-)
+        "src/cuda/gaussianblur.cu"
 
+)
 
 target_include_directories(PROJEKT2_0 PRIVATE
         ${OpenCV_INCLUDE_DIRS}
         ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
 )
-
 
 target_link_libraries(PROJEKT2_0 PRIVATE
         Qt::Core
@@ -78,7 +78,6 @@ target_link_libraries(PROJEKT2_0 PRIVATE
         ${OpenCV_LIBS}
         CUDA::cudart
 )
-
 
 if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     set(DEBUG_SUFFIX)

@@ -1,7 +1,8 @@
 #include "../header files/VideoWindow.h"
 #include "../header files/ToolBar.h"
 #include "../header files/ControlBar.h"
-#include "../cuda/grayscale.cuh"   // ✅ include your CUDA header
+#include "../cuda/grayscale.cuh"
+#include "../cuda/gaussianblur.cuh"
 
 #include <QFileDialog>
 #include <QVBoxLayout>
@@ -44,6 +45,9 @@ VideoWindow::VideoWindow(QWidget *parent)
 
     connect(toolBar, &ToolBar::openAnotherVideoClicked, this, &VideoWindow::loadVideo);
     connect(toolBar, &ToolBar::grayscaleFilterClicked, this, &VideoWindow::applyGrayscaleFilter);
+    connect(toolBar, &ToolBar::gaussianFilterClicked, this, [this]() {
+    gaussianActive = !gaussianActive;
+});
 }
 
 void VideoWindow::loadVideo() {
@@ -77,9 +81,22 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
     if (grayscaleActive) {
         QImage gray(img.width(), img.height(), QImage::Format_Grayscale8);
 
-        applyGrayscaleCUDA(img.bits(), gray.bits(), img.width(), img.height(), img.bytesPerLine());
+        applyGrayscaleCUDA(img.bits(), gray.bits(),
+                           img.width(), img.height(),
+                           img.bytesPerLine());
+
         lastFrame = gray;
-    } else {
+    }
+    else if (gaussianActive) {
+        QImage blurred(img.width(), img.height(), QImage::Format_RGB888);
+
+        applyGaussianBlurCUDA(img.bits(), blurred.bits(),
+                              img.width(), img.height(),
+                              img.bytesPerLine());
+
+        lastFrame = blurred;
+    }
+    else {
         lastFrame = img;
     }
 

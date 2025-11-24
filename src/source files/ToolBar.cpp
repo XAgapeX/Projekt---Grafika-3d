@@ -38,7 +38,6 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
         );
     }
 
-
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(10, 5, 10, 5);
     layout->setSpacing(10);
@@ -56,4 +55,5 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     setLayout(layout);
 
     connect(openTest, &QPushButton::clicked, this, &ToolBar::openAnotherVideoClicked);
+    connect(filter2, &QPushButton::clicked, this, &ToolBar::gaussianFilterClicked);
 }

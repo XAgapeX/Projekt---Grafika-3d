@@ -16,6 +16,7 @@ public:
 signals:
     void openAnotherVideoClicked();
     void grayscaleFilterClicked();
+    void gaussianFilterClicked();
 
 
 private:
