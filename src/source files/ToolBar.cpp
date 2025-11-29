@@ -23,14 +23,20 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
 
     QPushButton *filter1 = new QPushButton("Grayscale", this);
     connect(filter1, &QPushButton::clicked, this, &ToolBar::grayscaleFilterClicked);
+
     QPushButton *filter2 = new QPushButton("Gaussian Blur", this);
     connect(filter2, &QPushButton::clicked, this, &ToolBar::gaussianFilterClicked);
+
     QPushButton *filter3 = new QPushButton("Sepia", this);
     connect(filter3, &QPushButton::clicked, this, &ToolBar::sepiaFilterClicked);
+
     QPushButton *filter4 = new QPushButton("Negative", this);
     connect(filter4, &QPushButton::clicked, this, &ToolBar::negativeFilterClicked);
 
-    QList<QPushButton*> filterButtons = {filter1, filter2, filter3, filter4};
+    QPushButton *filter5 = new QPushButton("High-Pass Filter", this);
+    connect(filter5, &QPushButton::clicked, this, &ToolBar::highpassFilterClicked);
+
+    QList<QPushButton*> filterButtons = {filter1, filter2, filter3, filter4, filter5};
     for (auto *btn : filterButtons) {
         btn->setMinimumHeight(30);
         btn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
