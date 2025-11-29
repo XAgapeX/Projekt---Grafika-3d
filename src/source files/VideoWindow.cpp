@@ -3,7 +3,6 @@
 #include "../header files/ControlBar.h"
 #include "../cuda/grayscale.cuh"
 #include "../cuda/gaussianblur.cuh"
-#include "../cuda/sepia.cuh"
 
 #include <QFileDialog>
 #include <QVBoxLayout>
@@ -47,13 +46,8 @@ VideoWindow::VideoWindow(QWidget *parent)
     connect(toolBar, &ToolBar::openAnotherVideoClicked, this, &VideoWindow::loadVideo);
     connect(toolBar, &ToolBar::grayscaleFilterClicked, this, &VideoWindow::applyGrayscaleFilter);
     connect(toolBar, &ToolBar::gaussianFilterClicked, this, [this]() {
-        gaussianActive = !gaussianActive;
-    });
-
-    connect(toolBar, &ToolBar::sepiaFilterClicked, this, [this]() {
-        sepiaActive = !sepiaActive;
-        qDebug() << "Sepia filter:" << (sepiaActive ? "ON" : "OFF");
-    });
+    gaussianActive = !gaussianActive;
+});
 }
 
 void VideoWindow::loadVideo() {
@@ -102,17 +96,6 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
 
         lastFrame = blurred;
     }
-
-    else if (sepiaActive) {
-        QImage sepia(img.width(), img.height(), QImage::Format_RGB888);
-
-        applySepiaCUDA(img.bits(), sepia.bits(),
-                       img.width(), img.height(),
-                       img.bytesPerLine());
-
-        lastFrame = sepia;
-    }
-
     else {
         lastFrame = img;
     }
