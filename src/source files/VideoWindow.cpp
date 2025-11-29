@@ -1,8 +1,10 @@
 #include "../header files/VideoWindow.h"
 #include "../header files/ToolBar.h"
 #include "../header files/ControlBar.h"
+
 #include "../cuda/grayscale.cuh"
 #include "../cuda/gaussianblur.cuh"
+#include "../cuda/sepia.cuh"
 
 #include <QFileDialog>
 #include <QVBoxLayout>
@@ -14,7 +16,9 @@
 
 VideoWindow::VideoWindow(QWidget *parent)
     : QWidget(parent),
-      grayscaleActive(false)
+      grayscaleActive(false),
+      gaussianActive(false),
+      sepiaActive(false)
 {
     player = new QMediaPlayer(this);
     audioOutput = new QAudioOutput(this);
@@ -45,9 +49,8 @@ VideoWindow::VideoWindow(QWidget *parent)
 
     connect(toolBar, &ToolBar::openAnotherVideoClicked, this, &VideoWindow::loadVideo);
     connect(toolBar, &ToolBar::grayscaleFilterClicked, this, &VideoWindow::applyGrayscaleFilter);
-    connect(toolBar, &ToolBar::gaussianFilterClicked, this, [this]() {
-    gaussianActive = !gaussianActive;
-});
+    connect(toolBar, &ToolBar::gaussianFilterClicked, this, &VideoWindow::applyGaussianFilter);
+    connect(toolBar, &ToolBar::sepiaFilterClicked, this, &VideoWindow::applySepiaFilter);
 }
 
 void VideoWindow::loadVideo() {
@@ -65,7 +68,14 @@ void VideoWindow::loadVideo() {
 
 void VideoWindow::applyGrayscaleFilter() {
     grayscaleActive = !grayscaleActive;
-    qDebug() << "Grayscale filter:" << (grayscaleActive ? "ON" : "OFF");
+}
+
+void VideoWindow::applyGaussianFilter() {
+    gaussianActive = !gaussianActive;
+}
+
+void VideoWindow::applySepiaFilter() {
+    sepiaActive = !sepiaActive;
 }
 
 void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
@@ -78,28 +88,36 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
     QImage img = copy.toImage().convertToFormat(QImage::Format_RGB888);
     copy.unmap();
 
+    QImage processed = img;
+
+    // --- GRAYSCALE ---
     if (grayscaleActive) {
         QImage gray(img.width(), img.height(), QImage::Format_Grayscale8);
-
-        applyGrayscaleCUDA(img.bits(), gray.bits(),
+        applyGrayscaleCUDA(processed.bits(), gray.bits(),
                            img.width(), img.height(),
                            img.bytesPerLine());
-
-        lastFrame = gray;
+        processed = gray.convertToFormat(QImage::Format_RGB888);
     }
-    else if (gaussianActive) {
-        QImage blurred(img.width(), img.height(), QImage::Format_RGB888);
 
-        applyGaussianBlurCUDA(img.bits(), blurred.bits(),
+    // --- GAUSSIAN ---
+    if (gaussianActive) {
+        QImage blurred(img.width(), img.height(), QImage::Format_RGB888);
+        applyGaussianBlurCUDA(processed.bits(), blurred.bits(),
                               img.width(), img.height(),
                               img.bytesPerLine());
-
-        lastFrame = blurred;
-    }
-    else {
-        lastFrame = img;
+        processed = blurred;
     }
 
+    // --- SEPIA ---
+    if (sepiaActive) {
+        QImage sepia(img.width(), img.height(), QImage::Format_RGB888);
+        applySepiaCUDA(processed.bits(), sepia.bits(),
+                       img.width(), img.height(),
+                       img.bytesPerLine());
+        processed = sepia;
+    }
+
+    lastFrame = processed;
 
     QPixmap scaledPixmap = QPixmap::fromImage(lastFrame).scaled(
         videoLabel->size(),

@@ -24,7 +24,9 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     QPushButton *filter1 = new QPushButton("Grayscale", this);
     connect(filter1, &QPushButton::clicked, this, &ToolBar::grayscaleFilterClicked);
     QPushButton *filter2 = new QPushButton("Gaussian Blur", this);
+    connect(filter2, &QPushButton::clicked, this, &ToolBar::gaussianFilterClicked);
     QPushButton *filter3 = new QPushButton("Sepia", this);
+    connect(filter3, &QPushButton::clicked, this, &ToolBar::sepiaFilterClicked);
     QPushButton *filter4 = new QPushButton("Negative", this);
 
     QList<QPushButton*> filterButtons = {filter1, filter2, filter3, filter4};
@@ -56,5 +58,4 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     setLayout(layout);
 
     connect(openTest, &QPushButton::clicked, this, &ToolBar::openAnotherVideoClicked);
-    connect(filter2, &QPushButton::clicked, this, &ToolBar::gaussianFilterClicked);
 }

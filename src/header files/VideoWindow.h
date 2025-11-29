@@ -24,6 +24,7 @@ protected:
 private slots:
     void applyGrayscaleFilter();
     void applyGaussianFilter();
+    void applySepiaFilter();
     void onFrameAvailable(const QVideoFrame &frame);
 
 private:
