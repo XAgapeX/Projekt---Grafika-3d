@@ -35,5 +35,6 @@ private:
 
     bool grayscaleActive = false;
     bool gaussianActive = false;
+    bool sepiaActive = false;
     QImage lastFrame;
 };

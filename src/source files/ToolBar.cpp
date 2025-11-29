@@ -2,11 +2,9 @@
 #include <QLabel>
 #include <QPalette>
 
-
 ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     setAttribute(Qt::WA_StyledBackground, true);
     setStyleSheet("ToolBar { background-color: #21618c !important; }");
-
 
     openTest = new QPushButton("Open Another Video", this);
     openTest->setStyleSheet(
@@ -15,16 +13,18 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     openTest->setMaximumHeight(40);
     openTest->setFixedWidth(180);
 
-
     filtersLabel = new QLabel("Filters :", this);
     filtersLabel->setStyleSheet(
         "background-color:transparent; color: white; font-size: 16px; font-weight: bold;");
 
-
     QPushButton *filter1 = new QPushButton("Grayscale", this);
     connect(filter1, &QPushButton::clicked, this, &ToolBar::grayscaleFilterClicked);
+
     QPushButton *filter2 = new QPushButton("Gaussian Blur", this);
+
     QPushButton *filter3 = new QPushButton("Sepia", this);
+    connect(filter3, &QPushButton::clicked, this, &ToolBar::sepiaFilterClicked);
+
     QPushButton *filter4 = new QPushButton("Negative", this);
 
     QList<QPushButton*> filterButtons = {filter1, filter2, filter3, filter4};

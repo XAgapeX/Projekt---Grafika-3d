@@ -18,6 +18,7 @@ signals:
     void openAnotherVideoClicked();
     void grayscaleFilterClicked();
     void gaussianFilterClicked();
+    void sepiaFilterClicked();
 
 
 private:
