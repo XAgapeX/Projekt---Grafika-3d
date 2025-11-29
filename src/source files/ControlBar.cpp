@@ -41,7 +41,7 @@ ControlBar::ControlBar(QMediaPlayer *player, QWidget *parent)
     volumeIcon->setPixmap(volumePixmap.scaled(20, 20, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     volumeIcon->setStyleSheet("background-color: transparent; border: none;");
 
-    volumeSlider->setRange(0, 100);
+    volumeSlider->setRange(0, 40);
     volumeSlider->setValue(player->audioOutput()->volume() * 100);
 
     positionSlider->setRange(0, 0);

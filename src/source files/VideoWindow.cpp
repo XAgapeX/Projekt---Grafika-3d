@@ -5,6 +5,7 @@
 #include "../cuda/grayscale.cuh"
 #include "../cuda/gaussianblur.cuh"
 #include "../cuda/sepia.cuh"
+#include "../cuda/negative.cuh"
 
 #include <QFileDialog>
 #include <QVBoxLayout>
@@ -18,7 +19,9 @@ VideoWindow::VideoWindow(QWidget *parent)
     : QWidget(parent),
       grayscaleActive(false),
       gaussianActive(false),
-      sepiaActive(false)
+      sepiaActive(false),
+      negativeActive(false)
+
 {
     player = new QMediaPlayer(this);
     audioOutput = new QAudioOutput(this);
@@ -51,6 +54,7 @@ VideoWindow::VideoWindow(QWidget *parent)
     connect(toolBar, &ToolBar::grayscaleFilterClicked, this, &VideoWindow::applyGrayscaleFilter);
     connect(toolBar, &ToolBar::gaussianFilterClicked, this, &VideoWindow::applyGaussianFilter);
     connect(toolBar, &ToolBar::sepiaFilterClicked, this, &VideoWindow::applySepiaFilter);
+    connect(toolBar, &ToolBar::negativeFilterClicked, this, &VideoWindow::applyNegativeFilter);
 }
 
 void VideoWindow::loadVideo() {
@@ -76,6 +80,10 @@ void VideoWindow::applyGaussianFilter() {
 
 void VideoWindow::applySepiaFilter() {
     sepiaActive = !sepiaActive;
+}
+
+void VideoWindow::applyNegativeFilter() {
+    negativeActive = !negativeActive;
 }
 
 void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
@@ -115,6 +123,15 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
                        img.width(), img.height(),
                        img.bytesPerLine());
         processed = sepia;
+    }
+
+    // --- NEGATIVE ---
+    if (negativeActive) {
+        QImage negative(img.width(), img.height(), QImage::Format_RGB888);
+        applyNegativeCUDA(processed.bits(), negative.bits(),
+                          img.width(), img.height(),
+                          img.bytesPerLine());
+        processed = negative;
     }
 
     lastFrame = processed;

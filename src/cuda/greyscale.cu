@@ -9,8 +9,7 @@ return; \
 }
 
 __global__ void grayscaleKernel(unsigned char* input, int inputPitch,
-                                unsigned char* output, int width, int height)
-{
+                                unsigned char* output, int width, int height)       {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
     if (x < width && y < height) {

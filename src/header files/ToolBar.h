@@ -19,6 +19,7 @@ signals:
     void grayscaleFilterClicked();
     void gaussianFilterClicked();
     void sepiaFilterClicked();
+    void negativeFilterClicked();
 
 
 private:

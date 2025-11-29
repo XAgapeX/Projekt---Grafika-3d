@@ -25,6 +25,7 @@ private slots:
     void applyGrayscaleFilter();
     void applyGaussianFilter();
     void applySepiaFilter();
+    void applyNegativeFilter();
     void onFrameAvailable(const QVideoFrame &frame);
 
 private:
@@ -38,5 +39,6 @@ private:
     bool grayscaleActive = false;
     bool gaussianActive = false;
     bool sepiaActive = false;
+    bool negativeActive = false;
     QImage lastFrame;
 };

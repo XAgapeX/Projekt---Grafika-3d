@@ -28,6 +28,7 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     QPushButton *filter3 = new QPushButton("Sepia", this);
     connect(filter3, &QPushButton::clicked, this, &ToolBar::sepiaFilterClicked);
     QPushButton *filter4 = new QPushButton("Negative", this);
+    connect(filter4, &QPushButton::clicked, this, &ToolBar::negativeFilterClicked);
 
     QList<QPushButton*> filterButtons = {filter1, filter2, filter3, filter4};
     for (auto *btn : filterButtons) {
