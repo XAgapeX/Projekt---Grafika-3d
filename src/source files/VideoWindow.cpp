@@ -14,7 +14,8 @@
 
 VideoWindow::VideoWindow(QWidget *parent)
     : QWidget(parent),
-      grayscaleActive(false)
+      grayscaleActive(false),
+      gaussianActive(false)
 {
     player = new QMediaPlayer(this);
     audioOutput = new QAudioOutput(this);
@@ -42,12 +43,10 @@ VideoWindow::VideoWindow(QWidget *parent)
 
     QSize screenSize = QGuiApplication::primaryScreen()->availableSize();
     resize(screenSize.width() * 0.6, screenSize.height() * 0.6);
-
     connect(toolBar, &ToolBar::openAnotherVideoClicked, this, &VideoWindow::loadVideo);
     connect(toolBar, &ToolBar::grayscaleFilterClicked, this, &VideoWindow::applyGrayscaleFilter);
-    connect(toolBar, &ToolBar::gaussianFilterClicked, this, [this]() {
-    gaussianActive = !gaussianActive;
-});
+    connect(toolBar,&ToolBar::gaussianFilterClicked,this,&VideoWindow::applyGaussianFilter);
+
 }
 
 void VideoWindow::loadVideo() {
@@ -66,6 +65,11 @@ void VideoWindow::loadVideo() {
 void VideoWindow::applyGrayscaleFilter() {
     grayscaleActive = !grayscaleActive;
     qDebug() << "Grayscale filter:" << (grayscaleActive ? "ON" : "OFF");
+}
+
+void VideoWindow::applyGaussianFilter() {
+    gaussianActive = !gaussianActive;
+    qDebug() << "Gaussian filter:" << (gaussianActive ? "ON" : "OFF");
 }
 
 void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
