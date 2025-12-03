@@ -6,6 +6,7 @@
 #include "../cuda/gaussianblur.cuh"
 #include "../cuda/sepia.cuh"
 #include "../cuda/negative.cuh"
+#include "../cuda/sobel.cuh"
 
 #include <QFileDialog>
 #include <QVBoxLayout>
@@ -15,13 +16,15 @@
 #include <QResizeEvent>
 #include <QDebug>
 
+
+
 VideoWindow::VideoWindow(QWidget *parent)
     : QWidget(parent),
       grayscaleActive(false),
       gaussianActive(false),
       sepiaActive(false),
-      negativeActive(false)
-
+      negativeActive(false),
+      sobelActive(false)
 {
     player = new QMediaPlayer(this);
     audioOutput = new QAudioOutput(this);
@@ -55,6 +58,7 @@ VideoWindow::VideoWindow(QWidget *parent)
     connect(toolBar, &ToolBar::gaussianFilterClicked, this, &VideoWindow::applyGaussianFilter);
     connect(toolBar, &ToolBar::sepiaFilterClicked, this, &VideoWindow::applySepiaFilter);
     connect(toolBar, &ToolBar::negativeFilterClicked, this, &VideoWindow::applyNegativeFilter);
+    connect(toolBar, &ToolBar::sobelFilterClicked, this, &VideoWindow::applySobelFilter);
 }
 
 void VideoWindow::loadVideo() {
@@ -84,6 +88,10 @@ void VideoWindow::applySepiaFilter() {
 
 void VideoWindow::applyNegativeFilter() {
     negativeActive = !negativeActive;
+}
+
+void VideoWindow::applySobelFilter() {
+    sobelActive = !sobelActive;
 }
 
 void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
@@ -132,6 +140,13 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
                           img.width(), img.height(),
                           img.bytesPerLine());
         processed = negative;
+    }
+
+    if (sobelActive) {
+        QImage sobel(img.width(), img.height(), QImage::Format_RGB888);
+        applySobelCUDA(processed.bits(), sobel.bits(),
+            img.width(), img.height(),img.bytesPerLine());
+        processed = sobel;
     }
 
     lastFrame = processed;

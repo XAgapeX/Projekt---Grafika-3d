@@ -26,6 +26,7 @@ private slots:
     void applyGaussianFilter();
     void applySepiaFilter();
     void applyNegativeFilter();
+    void applySobelFilter();
     void onFrameAvailable(const QVideoFrame &frame);
 
 private:
@@ -40,5 +41,6 @@ private:
     bool gaussianActive = false;
     bool sepiaActive = false;
     bool negativeActive = false;
+    bool sobelActive = false;
     QImage lastFrame;
 };

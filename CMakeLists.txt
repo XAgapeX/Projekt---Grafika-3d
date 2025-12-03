@@ -62,6 +62,7 @@ add_executable(PROJEKT2_0
         "src/cuda/gaussianblur.cu"
         "src/cuda/sepia.cu"
         "src/cuda/negative.cu"
+        "src/cuda/sobel.cu"
 
 )
 
