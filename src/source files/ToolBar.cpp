@@ -33,8 +33,8 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     QPushButton *filter4 = new QPushButton("Negative", this);
     connect(filter4, &QPushButton::clicked, this, &ToolBar::negativeFilterClicked);
 
-    QPushButton *filter5 = new QPushButton("High-Pass Filter", this);
-    connect(filter5, &QPushButton::clicked, this, &ToolBar::highpassFilterClicked);
+    QPushButton *filter5 = new QPushButton("Sobel", this);
+    connect(filter5, &QPushButton::clicked, this, &ToolBar::sobelFilterClicked);
 
     QList<QPushButton*> filterButtons = {filter1, filter2, filter3, filter4, filter5};
     for (auto *btn : filterButtons) {

@@ -20,7 +20,7 @@ signals:
     void gaussianFilterClicked();
     void sepiaFilterClicked();
     void negativeFilterClicked();
-    void highpassFilterClicked();
+    void sobelFilterClicked();
 
 
 
