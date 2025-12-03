@@ -1,7 +1,6 @@
 #include "../header files/ToolBar.h"
 #include <QLabel>
-#include <QPalette>
-
+#include <QSlider>
 
 ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     setAttribute(Qt::WA_StyledBackground, true);
@@ -36,8 +35,13 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     QPushButton *filter5 = new QPushButton("Sobel", this);
     connect(filter5, &QPushButton::clicked, this, &ToolBar::sobelFilterClicked);
 
-    QList<QPushButton*> filterButtons = {filter1, filter2, filter3, filter4, filter5};
-    for (auto *btn : filterButtons) {
+    QLabel *filter6_label = new QLabel("Brightness and Contrast:", this);
+    filter6_label->setStyleSheet(
+        "background-color:transparent; color: white; font-size: 16px; font-weight: bold;");
+
+
+    QList<QPushButton *> filterButtons = {filter1, filter2, filter3, filter4, filter5,};
+    for (auto *btn: filterButtons) {
         btn->setMinimumHeight(30);
         btn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         btn->setStyleSheet(
@@ -55,14 +59,55 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     layout->addWidget(openTest);
     layout->addWidget(filtersLabel);
 
-    for (auto *btn : filterButtons)
+    for (auto *btn: filterButtons)
         layout->addWidget(btn);
+
+    layout->addWidget(filter6_label);
+
+    QSlider *brightnessSlider = new QSlider(Qt::Horizontal, this);
+    brightnessSlider->setRange(0, 100);
+    brightnessSlider->setValue(50);
+    brightnessSlider->setFixedWidth(100);
+
+    QSlider *contrastSlider = new QSlider(Qt::Horizontal, this);
+    contrastSlider->setRange(0, 100);
+    contrastSlider->setValue(50);
+    contrastSlider->setFixedWidth(100);
+
+
+    QHBoxLayout *slidersLayout = new QHBoxLayout();
+
+    QString sliderStyle = R"(
+    QSlider {
+        background: transparent;
+    }
+    QSlider::groove:horizontal {
+        height: 8px;
+        background: white;
+        border-radius: 4px;
+    }
+    QSlider::handle:horizontal {
+        background: white;
+        border: 1px solid #21618c;
+        width: 16px;
+        margin: -4px 0;
+        border-radius: 8px;
+    })";
+
+    brightnessSlider->setStyleSheet(sliderStyle);
+    contrastSlider->setStyleSheet(sliderStyle);
+
+    slidersLayout->setSpacing(10);
+    slidersLayout->addWidget(brightnessSlider);
+    slidersLayout->addWidget(contrastSlider);
+
+    layout->addLayout(slidersLayout);
 
     layout->addStretch();
 
-    setBackgroundRole(QPalette::Window);
-    setAutoFillBackground(true);
-    setLayout(layout);
+
+    layout->addStretch();
+
 
     connect(openTest, &QPushButton::clicked, this, &ToolBar::openAnotherVideoClicked);
 }
