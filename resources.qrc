@@ -12,6 +12,12 @@
         <file>resources/icons/refersh.png</file>
     </qresource>
     <qresource prefix="/">
+        <file>resources/icons/brightness.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>resources/icons/contrast.png</file>
+    </qresource>
+    <qresource prefix="/">
         <file>resources/icons/play-button-arrowhead.png</file>
     </qresource>
 </RCC>

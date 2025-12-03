@@ -6,7 +6,6 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     setAttribute(Qt::WA_StyledBackground, true);
     setStyleSheet("ToolBar { background-color: #21618c !important; }");
 
-
     openTest = new QPushButton("Open Another Video", this);
     openTest->setStyleSheet(
         "background-color: white; color: #21618c; border-radius: 5px; "
@@ -14,11 +13,9 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     openTest->setMaximumHeight(40);
     openTest->setFixedWidth(180);
 
-
     filtersLabel = new QLabel("Filters :", this);
     filtersLabel->setStyleSheet(
         "background-color:transparent; color: white; font-size: 16px; font-weight: bold;");
-
 
     QPushButton *filter1 = new QPushButton("Grayscale", this);
     connect(filter1, &QPushButton::clicked, this, &ToolBar::grayscaleFilterClicked);
@@ -39,9 +36,8 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     filter6_label->setStyleSheet(
         "background-color:transparent; color: white; font-size: 16px; font-weight: bold;");
 
-
-    QList<QPushButton *> filterButtons = {filter1, filter2, filter3, filter4, filter5,};
-    for (auto *btn: filterButtons) {
+    QList<QPushButton *> filterButtons = {filter1, filter2, filter3, filter4, filter5};
+    for (auto *btn : filterButtons) {
         btn->setMinimumHeight(30);
         btn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         btn->setStyleSheet(
@@ -59,28 +55,35 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     layout->addWidget(openTest);
     layout->addWidget(filtersLabel);
 
-    for (auto *btn: filterButtons)
+    for (auto *btn : filterButtons)
         layout->addWidget(btn);
 
     layout->addWidget(filter6_label);
+
+    QLabel *brightnessIcon = new QLabel(this);
+    brightnessIcon->setAttribute(Qt::WA_TranslucentBackground);
+    brightnessIcon->setPixmap(QPixmap(":/resources/icons/brightness.png")
+                                  .scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     QSlider *brightnessSlider = new QSlider(Qt::Horizontal, this);
     brightnessSlider->setRange(0, 100);
     brightnessSlider->setValue(50);
     brightnessSlider->setFixedWidth(100);
 
+    QLabel *contrastIcon = new QLabel(this);
+    contrastIcon->setAttribute(Qt::WA_TranslucentBackground);
+    contrastIcon->setPixmap(QPixmap(":/resources/icons/contrast.png")
+                                 .scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
     QSlider *contrastSlider = new QSlider(Qt::Horizontal, this);
     contrastSlider->setRange(0, 100);
     contrastSlider->setValue(50);
     contrastSlider->setFixedWidth(100);
 
-
     QHBoxLayout *slidersLayout = new QHBoxLayout();
 
     QString sliderStyle = R"(
-    QSlider {
-        background: transparent;
-    }
+    QSlider { background: transparent; }
     QSlider::groove:horizontal {
         height: 8px;
         background: white;
@@ -97,17 +100,17 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     brightnessSlider->setStyleSheet(sliderStyle);
     contrastSlider->setStyleSheet(sliderStyle);
 
-    slidersLayout->setSpacing(10);
+    slidersLayout->addWidget(brightnessIcon);
     slidersLayout->addWidget(brightnessSlider);
+
+    slidersLayout->addSpacing(10);
+
+    slidersLayout->addWidget(contrastIcon);
     slidersLayout->addWidget(contrastSlider);
 
     layout->addLayout(slidersLayout);
 
     layout->addStretch();
-
-
-    layout->addStretch();
-
 
     connect(openTest, &QPushButton::clicked, this, &ToolBar::openAnotherVideoClicked);
 }
