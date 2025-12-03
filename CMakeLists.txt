@@ -63,6 +63,8 @@ add_executable(PROJEKT2_0
         "src/cuda/sepia.cu"
         "src/cuda/negative.cu"
         "src/cuda/sobel.cu"
+        "src/cuda/brightness.cu"
+        "src/cuda/contrast.cu"
 )
 
 target_include_directories(PROJEKT2_0 PRIVATE

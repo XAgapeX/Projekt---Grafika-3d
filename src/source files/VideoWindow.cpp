@@ -7,6 +7,8 @@
 #include "../cuda/sepia.cuh"
 #include "../cuda/negative.cuh"
 #include "../cuda/sobel.cuh"
+#include "../cuda/brightness.cuh"
+#include "../cuda/contrast.cuh"
 
 #include <QFileDialog>
 #include <QVBoxLayout>
@@ -59,6 +61,10 @@ VideoWindow::VideoWindow(QWidget *parent)
     connect(toolBar, &ToolBar::sepiaFilterClicked, this, &VideoWindow::applySepiaFilter);
     connect(toolBar, &ToolBar::negativeFilterClicked, this, &VideoWindow::applyNegativeFilter);
     connect(toolBar, &ToolBar::sobelFilterClicked, this, &VideoWindow::applySobelFilter);
+    connect(toolBar, &ToolBar::brightnessChanged, this, [this](int v){brightnessValue = v - 50; });
+    connect(toolBar, &ToolBar::contrastChanged, this, [this](int v){
+    contrastValue = 0.5f + (v / 100.0f);
+});
 }
 
 void VideoWindow::loadVideo() {
@@ -105,6 +111,24 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
     copy.unmap();
 
     QImage processed = img;
+
+    if (brightnessValue != 0) {
+        QImage out(img.width(), img.height(), QImage::Format_RGB888);
+        applyBrightnessCUDA(processed.bits(), out.bits(),
+                            img.width(), img.height(),
+                            img.bytesPerLine(),
+                            brightnessValue * 3);
+        processed = out;
+    }
+
+    if (contrastValue != 1.0f) {
+        QImage out(img.width(), img.height(), QImage::Format_RGB888);
+        applyContrastCUDA(processed.bits(), out.bits(),
+                           img.width(), img.height(),
+                           img.bytesPerLine(),
+                           contrastValue);
+        processed = out;
+    }
 
     // --- GRAYSCALE ---
     if (grayscaleActive) {

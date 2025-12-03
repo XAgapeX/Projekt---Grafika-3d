@@ -37,6 +37,9 @@ private:
     ToolBar *toolBar;
     ControlBar *controlBar;
 
+    int brightnessValue = 0;
+    float contrastValue = 1.0f;
+
     bool grayscaleActive = false;
     bool gaussianActive = false;
     bool sepiaActive = false;

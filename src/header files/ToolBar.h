@@ -21,6 +21,8 @@ signals:
     void sepiaFilterClicked();
     void negativeFilterClicked();
     void sobelFilterClicked();
+    void brightnessChanged(int value);
+    void contrastChanged(int value);
 
 
 

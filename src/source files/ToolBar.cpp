@@ -69,6 +69,8 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     brightnessSlider->setRange(0, 100);
     brightnessSlider->setValue(50);
     brightnessSlider->setFixedWidth(100);
+    connect(brightnessSlider, &QSlider::valueChanged,this, &ToolBar::brightnessChanged);
+
 
     QLabel *contrastIcon = new QLabel(this);
     contrastIcon->setAttribute(Qt::WA_TranslucentBackground);
@@ -79,6 +81,7 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     contrastSlider->setRange(0, 100);
     contrastSlider->setValue(50);
     contrastSlider->setFixedWidth(100);
+    connect(contrastSlider, &QSlider::valueChanged,this, &ToolBar::contrastChanged);
 
     QHBoxLayout *slidersLayout = new QHBoxLayout();
 
