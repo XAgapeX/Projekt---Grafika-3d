@@ -137,11 +137,21 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
 
     // --- GRAYSCALE ---
     if (grayscaleActive) {
-        QImage gray(img.width(), img.height(), QImage::Format_Grayscale8);
-        applyGrayscaleCUDA(processed.bits(), gray.bits(),
-                           img.width(), img.height(),
+        QImage grayY(img.width(), img.height(), QImage::Format_Grayscale8);
+        QImage grayCb(img.width(), img.height(), QImage::Format_Grayscale8);
+        QImage grayCr(img.width(), img.height(), QImage::Format_Grayscale8);
+
+
+        applyGrayscaleCUDA(processed.bits(),
+                           grayY.bits(),
+                           grayCb.bits(),
+                           grayCr.bits(),
+                           img.width(),
+                           img.height(),
                            img.bytesPerLine());
-        processed = gray.convertToFormat(QImage::Format_RGB888);
+
+
+        processed = grayY.convertToFormat(QImage::Format_RGB888);
     }
 
     // --- GAUSSIAN ---
