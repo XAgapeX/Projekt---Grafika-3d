@@ -23,6 +23,7 @@ signals:
     void sobelFilterClicked();
     void brightnessChanged(int value);
     void contrastChanged(int value);
+    void cartoonFilterClicked();
 
 
 

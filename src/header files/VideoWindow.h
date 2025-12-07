@@ -27,7 +27,9 @@ private slots:
     void applySepiaFilter();
     void applyNegativeFilter();
     void applySobelFilter();
+    void applyCartoonFilter();
     void onFrameAvailable(const QVideoFrame &frame);
+
 
 private:
     QMediaPlayer *player;
@@ -45,5 +47,6 @@ private:
     bool sepiaActive = false;
     bool negativeActive = false;
     bool sobelActive = false;
+    bool cartoonActive = false;
     QImage lastFrame;
 };

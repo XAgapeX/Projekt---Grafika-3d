@@ -36,7 +36,10 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     filter6_label->setStyleSheet(
         "background-color:transparent; color: white; font-size: 16px; font-weight: bold;");
 
-    QList<QPushButton *> filterButtons = {filter1, filter2, filter3, filter4, filter5};
+    QPushButton *filter6 = new QPushButton("Cartoon", this);
+    connect(filter6, &QPushButton::clicked, this, &ToolBar::cartoonFilterClicked);
+
+    QList<QPushButton *> filterButtons = {filter1, filter2, filter3, filter4, filter5, filter6};
     for (auto *btn : filterButtons) {
         btn->setMinimumHeight(30);
         btn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);

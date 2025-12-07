@@ -58,6 +58,15 @@ add_executable(PROJEKT2_0
         "src/opencv/source files/SenderOpenCV.cpp"
         "src/opencv/header files/SenderOpenCV.h"
 
+        "src/cuda/grayscale.cuh"
+        "src/cuda/brightness.cuh"
+        "src/cuda/contrast.cuh"
+        "src/cuda/gaussianblur.cuh"
+        "src/cuda/sepia.cuh"
+        "src/cuda/negative.cuh"
+        "src/cuda/sobel.cuh"
+        "src/cuda/cartoon.cuh"
+
         "src/cuda/greyscale.cu"
         "src/cuda/gaussianblur.cu"
         "src/cuda/sepia.cu"
@@ -65,6 +74,7 @@ add_executable(PROJEKT2_0
         "src/cuda/sobel.cu"
         "src/cuda/brightness.cu"
         "src/cuda/contrast.cu"
+        "src/cuda/cartoon.cu"
 )
 
 target_include_directories(PROJEKT2_0 PRIVATE

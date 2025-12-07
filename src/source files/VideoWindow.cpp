@@ -9,6 +9,7 @@
 #include "../cuda/sobel.cuh"
 #include "../cuda/brightness.cuh"
 #include "../cuda/contrast.cuh"
+#include "../cuda/cartoon.cuh"
 
 #include <QFileDialog>
 #include <QVBoxLayout>
@@ -26,7 +27,8 @@ VideoWindow::VideoWindow(QWidget *parent)
       gaussianActive(false),
       sepiaActive(false),
       negativeActive(false),
-      sobelActive(false)
+      sobelActive(false),
+      cartoonActive(false)
 {
     player = new QMediaPlayer(this);
     audioOutput = new QAudioOutput(this);
@@ -62,9 +64,8 @@ VideoWindow::VideoWindow(QWidget *parent)
     connect(toolBar, &ToolBar::negativeFilterClicked, this, &VideoWindow::applyNegativeFilter);
     connect(toolBar, &ToolBar::sobelFilterClicked, this, &VideoWindow::applySobelFilter);
     connect(toolBar, &ToolBar::brightnessChanged, this, [this](int v){brightnessValue = v - 50; });
-    connect(toolBar, &ToolBar::contrastChanged, this, [this](int v){
-    contrastValue = 0.5f + (v / 100.0f);
-});
+    connect(toolBar, &ToolBar::contrastChanged, this, [this](int v){contrastValue = 0.5f + (v / 100.0f);});
+    connect(toolBar, &ToolBar::cartoonFilterClicked, this, &VideoWindow::applyCartoonFilter);
 }
 
 void VideoWindow::loadVideo() {
@@ -98,6 +99,10 @@ void VideoWindow::applyNegativeFilter() {
 
 void VideoWindow::applySobelFilter() {
     sobelActive = !sobelActive;
+}
+
+void VideoWindow::applyCartoonFilter() {
+    cartoonActive = !cartoonActive;
 }
 
 void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
@@ -166,11 +171,20 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
         processed = negative;
     }
 
+    // --- SOBEL ---
     if (sobelActive) {
         QImage sobel(img.width(), img.height(), QImage::Format_RGB888);
         applySobelCUDA(processed.bits(), sobel.bits(),
             img.width(), img.height(),img.bytesPerLine());
         processed = sobel;
+    }
+
+    // --- CARTOON ---
+    if (cartoonActive) {
+        QImage cartoon(img.width(), img.height(), QImage::Format_RGB888);
+        applyCartoonCUDA(processed.bits(), cartoon.bits(),
+                         img.width(), img.height(), img.bytesPerLine());
+        processed = cartoon;
     }
 
     lastFrame = processed;
