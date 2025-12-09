@@ -1,13 +1,31 @@
 #include "contrast.cuh"
 #include <iostream>
 
+/**
+ * @brief Makro do sprawdzania błędów CUDA
+ */
 #define CUDA_CHECK(err) \
 if (err != cudaSuccess) { \
-std::cerr << "CUDA Error: " << cudaGetErrorString(err) \
-<< " (at " << __FILE__ << ":" << __LINE__ << ")" << std::endl; \
-return; \
+    std::cerr << "CUDA Error: " << cudaGetErrorString(err) \
+              << " (at " << __FILE__ << ":" << __LINE__ << ")" << std::endl; \
+    return; \
 }
 
+/**
+ * @brief Jądro CUDA stosujące kontrast do każdego piksela obrazu RGB
+ *
+ * Dla każdego kanału (R, G, B) oblicza nową wartość:
+ * newValue = ((oldValue - 128) * factor) + 128
+ *
+ * Wynik jest klamrowany do zakresu [0, 255].
+ *
+ * @param input Wskaźnik do danych wejściowych RGB
+ * @param inputPitch Pitch danych wejściowych
+ * @param output Wskaźnik do bufora wyjściowego RGB
+ * @param width Szerokość obrazu
+ * @param height Wysokość obrazu
+ * @param factor Współczynnik kontrastu
+ */
 __global__ void contrastKernel(unsigned char* input, int inputPitch,
                                unsigned char* output, int width, int height, float factor)
 {
@@ -30,6 +48,18 @@ __global__ void contrastKernel(unsigned char* input, int inputPitch,
     output[idx + 2] = (unsigned char)b;
 }
 
+/**
+ * @brief Funkcja główna do zastosowania kontrastu na obrazie RGB
+ *
+ * Tworzy bufor GPU, kopiuje dane, uruchamia jądro CUDA i kopiuje wynik z powrotem na hosta.
+ *
+ * @param input  Dane wejściowe RGB (host memory)
+ * @param output Bufor wyjściowy RGB (host memory)
+ * @param width  Szerokość obrazu
+ * @param height Wysokość obrazu
+ * @param inputPitch Pitch bufora wejściowego
+ * @param factor Współczynnik kontrastu
+ */
 void applyContrastCUDA(unsigned char* input, unsigned char* output,
                        int width, int height, int inputPitch, float factor)
 {

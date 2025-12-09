@@ -8,6 +8,22 @@ if (err != cudaSuccess) { \
     return; \
 }
 
+/**
+ * @brief Kernel CUDA konwertujący RGB do YCbCr dla każdego piksela.
+ *
+ * Wzory konwersji:
+ *   Y  = 0.299*R + 0.587*G + 0.114*B
+ *   Cb = 128 - 0.168736*R - 0.331264*G + 0.5*B
+ *   Cr = 128 + 0.5*R - 0.418688*G - 0.081312*B
+ *
+ * @param input     Bufor wejściowy RGB (GPU memory).
+ * @param inputPitch Pitch bufora wejściowego.
+ * @param outputY   Bufor wyjściowy Y (GPU memory).
+ * @param outputCb  Bufor wyjściowy Cb (GPU memory).
+ * @param outputCr  Bufor wyjściowy Cr (GPU memory).
+ * @param width     Szerokość obrazu w pikselach.
+ * @param height    Wysokość obrazu w pikselach.
+ */
 __global__ void grayscaleKernel(unsigned char* input, int inputPitch,
                                 unsigned char* outputY, unsigned char* outputCb, unsigned char* outputCr,
                                 int width, int height) {
@@ -30,6 +46,25 @@ __global__ void grayscaleKernel(unsigned char* input, int inputPitch,
     }
 }
 
+/**
+ * @brief Funkcja nakładająca filtr grayscale (RGB -> YCbCr) za pomocą CUDA.
+ *
+ * Operacje wykonywane przez funkcję:
+ * 1. Alokacja pamięci GPU dla buforów wejściowego (RGB) i wyjściowych (Y, Cb, Cr).
+ * 2. Kopiowanie danych z hosta do pamięci GPU.
+ * 3. Uruchomienie kernela grayscaleKernel<<<...>>>().
+ * 4. Synchronizacja i sprawdzenie błędów CUDA.
+ * 5. Skopiowanie wyników do buforów wyjściowych w pamięci hosta.
+ * 6. Zwolnienie pamięci GPU.
+ *
+ * @param input      Dane wejściowe obrazu RGB (host).
+ * @param outputY    Bufor wyjściowy Y (host).
+ * @param outputCb   Bufor wyjściowy Cb (host).
+ * @param outputCr   Bufor wyjściowy Cr (host).
+ * @param width      Szerokość obrazu (px).
+ * @param height     Wysokość obrazu (px).
+ * @param inputPitch Pitch bufora wejściowego.
+ */
 void applyGrayscaleCUDA(unsigned char* input,
                         unsigned char* outputY,
                         unsigned char* outputCb,

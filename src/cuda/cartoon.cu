@@ -2,6 +2,9 @@
 #include <iostream>
 #include <cmath>
 
+/**
+ * @brief Makro sprawdzające błędy CUDA
+ */
 #define CUDA_CHECK(err) \
 if (err != cudaSuccess) { \
     std::cerr << "CUDA Error: " << cudaGetErrorString(err) \
@@ -9,6 +12,22 @@ if (err != cudaSuccess) { \
     return; \
 }
 
+/**
+ * @brief Jądro CUDA implementujące efekt cartoon na obrazie RGB
+ *
+ * Dla każdego piksela:
+ * 1. Oblicza luminancję i zwiększa kontrast lokalny.
+ * 2. Redukuje liczbę kolorów (posterization).
+ * 3. Wykrywa krawędzie i koloruje je na czarno, jeśli magnituda gradientu przekracza threshold.
+ *
+ * @param input Wskaźnik do danych wejściowych RGB
+ * @param inputPitch Pitch danych wejściowych
+ * @param output Bufor wyjściowy RGB
+ * @param width Szerokość obrazu
+ * @param height Wysokość obrazu
+ * @param colorLevels Liczba poziomów kolorów
+ * @param edgeThreshold Prog wykrywania krawędzi
+ */
 __global__ void cartoonKernel(unsigned char* input, int inputPitch,
                               unsigned char* output, int width, int height,
                               int colorLevels, float edgeThreshold)
@@ -19,11 +38,11 @@ __global__ void cartoonKernel(unsigned char* input, int inputPitch,
 
     int idx = y * inputPitch + x * 3;
 
-
     int r = input[idx];
     int g = input[idx + 1];
     int b = input[idx + 2];
 
+    // Luminancja i kontrast lokalny
     float lum = 0.299f * r + 0.587f * g + 0.114f * b;
     float factor = 1.2f;
     r = max(0, min(255, (int)((r - lum) * factor + lum)));
@@ -34,13 +53,14 @@ __global__ void cartoonKernel(unsigned char* input, int inputPitch,
     input[idx + 1] = (unsigned char)g;
     input[idx + 2] = (unsigned char)b;
 
+    // Redukcja liczby kolorów
     for (int c = 0; c < 3; c++) {
         int value = input[idx + c];
         int newValue = (value * max(4, colorLevels)) / 256 * (256 / max(4, colorLevels));
         output[idx + c] = (unsigned char)(max(0, min(255, newValue)));
     }
 
-
+    // Wykrywanie krawędzi
     if (x > 0 && y > 0 && x < width - 1 && y < height - 1) {
         int idx_left  = y * inputPitch + (x - 1) * 3;
         int idx_right = y * inputPitch + (x + 1) * 3;
@@ -61,6 +81,19 @@ __global__ void cartoonKernel(unsigned char* input, int inputPitch,
     }
 }
 
+/**
+ * @brief Funkcja główna do zastosowania efektu cartoon na obrazie RGB
+ *
+ * Alokuje pamięć GPU, kopiuje dane, uruchamia jądro CUDA i kopiuje wynik z powrotem.
+ *
+ * @param input  Dane wejściowe RGB
+ * @param output Bufor wyjściowy RGB
+ * @param width  Szerokość obrazu
+ * @param height Wysokość obrazu
+ * @param inputPitch Pitch danych wejściowych
+ * @param colorLevels Liczba poziomów kolorów
+ * @param edgeThreshold Prog wykrywania krawędzi
+ */
 void applyCartoonCUDA(unsigned char* input, unsigned char* output,
                       int width, int height, int inputPitch,
                       int colorLevels, float edgeThreshold)

@@ -9,12 +9,34 @@ if (err != cudaSuccess) { \
     return; \
 }
 
+/**
+ * @brief Ogranicza wartość float do zakresu bajtowego [0, 255].
+ *
+ * @param x Wartość wejściowa.
+ * @return unsigned char Wartość ucięta do dopuszczalnego zakresu.
+ */
 __device__ inline unsigned char clampToByte(float x) {
     if (x < 0.f) return 0;
     if (x > 255.f) return 255;
     return static_cast<unsigned char>(x);
 }
 
+/**
+ * @brief Kernel CUDA nakładający efekt sepia na obraz RGB.
+ *
+ * Kernel działa dla każdego piksela niezależnie. Odcienie sepia powstają przez
+ * liniową kombinację składowych RGB według wzorów:
+ *
+ *   R' = 0.393R + 0.769G + 0.189B
+ *   G' = 0.349R + 0.686G + 0.168B
+ *   B' = 0.272R + 0.534G + 0.131B
+ *
+ * @param input      Bufor wejściowy (RGB), pamięć GPU.
+ * @param inputPitch Ilość bajtów w jednej linii wejściowego obrazu.
+ * @param output     Bufor wyjściowy (RGB), pamięć GPU.
+ * @param width      Szerokość obrazu w pikselach.
+ * @param height     Wysokość obrazu w pikselach.
+ */
 __global__ void sepiaKernel(unsigned char* input, int inputPitch,
                             unsigned char* output, int width, int height)
 {
@@ -40,6 +62,23 @@ __global__ void sepiaKernel(unsigned char* input, int inputPitch,
     }
 }
 
+/**
+ * @brief Główna funkcja nakładająca filtr sepia na obraz za pomocą CUDA.
+ *
+ * Operacje wykonywane przez funkcję:
+ * 1. Alokacja pamięci na GPU (input, output).
+ * 2. Kopiowanie bufora RGB z hosta do pamięci GPU.
+ * 3. Uruchomienie kernela sepiaKernel<<<...>>>().
+ * 4. Synchronizacja i sprawdzenie błędów CUDA.
+ * 5. Skopiowanie wyniku do bufora wyjściowego w pamięci hosta.
+ * 6. Zwolnienie pamięci GPU.
+ *
+ * @param input       Dane wejściowe obrazu RGB (host).
+ * @param output      Bufor wyjściowy RGB (host).
+ * @param width       Szerokość obrazu (px).
+ * @param height      Wysokość obrazu (px).
+ * @param inputPitch  Pitch bufora wejściowego.
+ */
 void applySepiaCUDA(unsigned char* input, unsigned char* output,
                     int width, int height, int inputPitch)
 {

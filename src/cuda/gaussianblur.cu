@@ -1,17 +1,29 @@
 #include "gaussianblur.cuh"
 #include <cuda_runtime.h>
-#include <stdint.h>
 #include <cmath>
 
 typedef unsigned char uchar;
 
+/**
+ * @brief Rozmiar jądra Gaussa (kernel 21x21)
+ */
 #define KERNEL_SIZE 21
 #define SIGMA 7.0f
 #define RADIUS (KERNEL_SIZE / 2)
 
+/**
+ * @brief Stała pamięć GPU przechowująca wartości macierzy Gaussa
+ */
 __constant__ float d_kernel[KERNEL_SIZE * KERNEL_SIZE];
+
+/**
+ * @brief Bufor hosta do wypełnienia macierzy Gaussa przed przesłaniem na GPU
+ */
 static float h_kernel[KERNEL_SIZE * KERNEL_SIZE];
 
+/**
+ * @brief Generuje macierz Gaussa i przesyła ją do pamięci stałej GPU
+ */
 void generateGaussianKernel() {
     float sum = 0.0f;
     int idx = 0;
@@ -31,6 +43,18 @@ void generateGaussianKernel() {
                        KERNEL_SIZE * KERNEL_SIZE * sizeof(float));
 }
 
+/**
+ * @brief Jądro CUDA wykorzystujące pamięć współdzieloną do rozmycia Gaussa
+ *
+ * Wczytuje piksele bloku do pamięci współdzielonej, a następnie wykonuje konwolucję
+ * dla każdego piksela z wykorzystaniem predefiniowanej macierzy Gaussa.
+ *
+ * @param input  Wskaźnik do danych wejściowych RGB
+ * @param output Wskaźnik do danych wyjściowych RGB
+ * @param width  Szerokość obrazu
+ * @param height Wysokość obrazu
+ * @param pitch  Pitch bufora wejściowego w bajtach
+ */
 __global__
 void gaussianBlurSharedKernel(const uchar* input, uchar* output,
                               int width, int height, int pitch)
@@ -45,6 +69,7 @@ void gaussianBlurSharedKernel(const uchar* input, uchar* output,
     int sharedWidth = blockDim.x + 2 * RADIUS;
     int sharedHeight = blockDim.y + 2 * RADIUS;
 
+    // Wczytywanie pikseli do pamięci współdzielonej
     for (int dy = ty; dy < sharedHeight; dy += blockDim.y) {
         for (int dx = tx; dx < sharedWidth; dx += blockDim.x) {
             int gx = blockIdx.x * blockDim.x + dx - RADIUS;
@@ -66,6 +91,7 @@ void gaussianBlurSharedKernel(const uchar* input, uchar* output,
 
     if (x >= width || y >= height) return;
 
+    // Konwolucja z jądrem Gaussa
     float r = 0, g = 0, b = 0;
     int idx = 0;
 
@@ -89,6 +115,17 @@ void gaussianBlurSharedKernel(const uchar* input, uchar* output,
     out[2] = (uchar)b;
 }
 
+/**
+ * @brief Funkcja główna do zastosowania filtra Gaussian Blur
+ *
+ * Tworzy bufor GPU, kopiuje dane, wywołuje jądro CUDA i kopiuje wynik z powrotem na hosta.
+ *
+ * @param input  Dane wejściowe RGB (host memory)
+ * @param output Bufor wyjściowy RGB (host memory)
+ * @param width  Szerokość obrazu
+ * @param height Wysokość obrazu
+ * @param pitch  Pitch bufora wejściowego
+ */
 void applyGaussianBlurCUDA(const uchar* input, uchar* output,
                            int width, int height, int pitch)
 {

@@ -4,28 +4,56 @@
 
 typedef unsigned char uchar;
 
-// Sobel w poziomie (Gx)
+/**
+ * @brief Stałe maski Sobela dla osi X.
+ *
+ * Używane do obliczania gradientu w poziomie.
+ */
 __constant__ int d_sobelX[9] = {
     -1, 0, 1,
     -2, 0, 2,
     -1, 0, 1
 };
 
-// Sobel w pionie (Gy)
+/**
+ * @brief Stałe maski Sobela dla osi Y.
+ *
+ * Używane do obliczania gradientu w pionie.
+ */
 __constant__ int d_sobelY[9] = {
     -1, -2, -1,
      0,  0,  0,
      1,  2,  1
 };
 
-
+/**
+ * @brief Oblicza luminancję piksela RGB (przekształcenie na Y).
+ *
+ * @param p wskaźnik na 3 bajty (R,G,B)
+ * @return luminancja z zakresu 0–255
+ */
 __device__
 inline float luminance(const uchar* p)
 {
     return 0.299f * p[0] + 0.587f * p[1] + 0.114f * p[2];
 }
 
-
+/**
+ * @brief Kernel CUDA wykonujący filtr Sobela w obrazie RGB.
+ *
+ * Kernel:
+ * - pobiera piksel wejściowy,
+ * - oblicza gradient Gx i Gy,
+ * - wylicza moduł gradientu,
+ * - zapisuje wynik jako piksel grayscale (R=G=B),
+ * - obsługuje piksele brzegowe (clamping).
+ *
+ * @param input obraz wejściowy RGB888 w pamięci GPU
+ * @param output obraz wyjściowy RGB888
+ * @param width szerokość obrazu
+ * @param height wysokość obrazu
+ * @param pitch liczba bajtów jednego wiersza obrazu
+ */
 __global__
 void sobelKernel(const uchar* input, uchar* output,
                  int width, int height, int pitch)
@@ -41,7 +69,7 @@ void sobelKernel(const uchar* input, uchar* output,
 
     int idx = 0;
 
-    // Sobel 3×3
+    // 3x3 okno Sobela
     for (int ky = -1; ky <= 1; ky++)
     {
         int py = min(max(y + ky, 0), height - 1);
@@ -62,20 +90,34 @@ void sobelKernel(const uchar* input, uchar* output,
     }
 
     float mag = sqrtf(gx * gx + gy * gy);
-
     if (mag > 255) mag = 255;
 
     uchar edge = (uchar)mag;
 
     uchar* out = output + y * pitch + x * 3;
 
-    // wynik w 3 kanałach (biały = krawędź)
+    // Zapisujemy jako RGB grayscale
     out[0] = edge;
     out[1] = edge;
     out[2] = edge;
 }
 
-
+/**
+ * @brief Host-funkcja uruchamiająca CUDA Sobel.
+ *
+ * Etapy:
+ * 1. alokacja pamięci GPU,
+ * 2. kopiowanie obrazu wejściowego (CPU → GPU),
+ * 3. uruchomienie kernela sobelKernel,
+ * 4. kopiowanie wyników (GPU → CPU),
+ * 5. zwolnienie pamięci GPU.
+ *
+ * @param input bufor wejściowy RGB888
+ * @param output bufor wyjściowy RGB888
+ * @param width szerokość obrazu
+ * @param height wysokość obrazu
+ * @param pitch liczba bajtów jednego wiersza
+ */
 void applySobelCUDA(const uchar* input, uchar* output,
                     int width, int height, int pitch)
 {
