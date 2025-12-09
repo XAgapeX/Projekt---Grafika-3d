@@ -7,6 +7,20 @@
 #include <QStackedWidget>
 #include <QPixmap>
 
+/**
+ * @brief Konstruktor klasy MainWindow.
+ *
+ * Tworzy główne okno aplikacji odtwarzacza wideo, inicjalizuje interfejs
+ * użytkownika, ustawia ikonę, tytuł oraz buduje układ widgetów.
+ *
+ * Funkcja:
+ * - ustawia parametry okna (tytuł, ikona, rozmiar, tło),
+ * - tworzy sekcję nagłówkową (ikona + etykieta + przycisk "Open Video"),
+ * - tworzy QStackedWidget zawierający ekran startowy i okno odtwarzacza,
+ * - łączy przycisk otwierania filmu z przełączeniem widoku i wczytaniem wideo.
+ *
+ * @param parent Wskaźnik na rodzica widgetu (domyślnie nullptr).
+ */
 
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)

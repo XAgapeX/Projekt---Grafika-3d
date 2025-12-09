@@ -7,7 +7,24 @@
 #include <QPushButton>
 #include <QSlider>
 
-
+/**
+ * @brief Tworzy pasek sterowania i podłącza go do QMediaPlayer.
+ *
+ * Inicjalizowane elementy:
+ * - play/pause
+ * - restart
+ * - czas + suwak pozycji
+ * - ikona + suwak głośności
+ *
+ * Ustawiane są połączenia:
+ * - zmiana pozycji
+ * - zmiana czasu trwania
+ * - kliknięcie play/pause
+ * - zmiana głośności
+ *
+ * @param player wskaźnik na QMediaPlayer
+ * @param parent widget rodzica
+ */
 ControlBar::ControlBar(QMediaPlayer *player, QWidget *parent)
     : QWidget(parent), player(player)
 {
@@ -23,7 +40,6 @@ ControlBar::ControlBar(QMediaPlayer *player, QWidget *parent)
     positionSlider->setStyleSheet("background-color: transparent; border: none;");
     timeLabel = new QLabel("00:00 / 00:00", this);
     timeLabel->setStyleSheet("color: #21618c; background-color: transparent;");
-
 
     playIcon = QIcon(":/resources/icons/play-button-arrowhead.png");
     pauseIcon = QIcon(":/resources/icons/pause.png");
@@ -64,6 +80,9 @@ ControlBar::ControlBar(QMediaPlayer *player, QWidget *parent)
     connect(player, &QMediaPlayer::durationChanged, this, &ControlBar::updateDuration);
 }
 
+/**
+ * @brief Przełącza odtwarzanie lub pauzę oraz zmienia ikonę.
+ */
 void ControlBar::togglePlayPause()
 {
     if (player->playbackState() == QMediaPlayer::PlayingState) {
@@ -79,6 +98,10 @@ void ControlBar::togglePlayPause()
     }
 }
 
+/**
+ * @brief Aktualizuje pozycję i tekst czasu wyświetlany na pasku.
+ * @param position aktualny czas wideo w milisekundach
+ */
 void ControlBar::updatePosition(qint64 position)
 {
     positionSlider->blockSignals(true);
@@ -88,6 +111,7 @@ void ControlBar::updatePosition(qint64 position)
     int sec = position / 1000;
     int min = sec / 60;
     sec = sec % 60;
+
     int totalSec = player->duration() / 1000;
     int totalMin = totalSec / 60;
     totalSec = totalSec % 60;
@@ -99,16 +123,28 @@ void ControlBar::updatePosition(qint64 position)
                        .arg(totalSec, 2, 10, QChar('0')));
 }
 
+/**
+ * @brief Ustawia zakres suwaka postępu.
+ * @param duration długość nagrania (ms)
+ */
 void ControlBar::updateDuration(qint64 duration)
 {
     positionSlider->setRange(0, static_cast<int>(duration));
 }
 
+/**
+ * @brief Przewija nagranie.
+ * @param value nowa pozycja w milisekundach
+ */
 void ControlBar::seek(int value)
 {
     player->setPosition(value);
 }
 
+/**
+ * @brief Zmiana głośności odtwarzacza.
+ * @param value wartość 0–100
+ */
 void ControlBar::changeVolume(int value)
 {
     player->audioOutput()->setVolume(value / 100.0);

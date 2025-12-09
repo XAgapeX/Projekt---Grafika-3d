@@ -1,7 +1,22 @@
 #include "../header files/ToolBar.h"
 #include <QLabel>
 #include <QSlider>
-
+/**
+ * @brief Konstruktor klasy ToolBar.
+ *
+ * Inicjalizuje cały pasek narzędziowy: tworzy przycisk otwierania nowego wideo,
+ * przyciski filtrów obrazu (grayscale, gaussian blur, sepia, negative, sobel, cartoon),
+ * suwaki regulacji jasności i kontrastu, a następnie ustawia układ QHBoxLayout
+ * umieszczający wszystkie elementy w jednym poziomym pasku.
+ *
+ * Każdy przycisk filtra jest połączony sygnałem z odpowiednią funkcją emitującą
+ * sygnał dostępny w sekcji signals.
+ *
+ * Suwaki jasności i kontrastu wysyłają sygnały z aktualną wartością (0–100),
+ * które mogą zostać odczytane w VideoWindow lub innym komponencie.
+ *
+ * @param parent rodzic widgetu (opcjonalny)
+ */
 ToolBar::ToolBar(QWidget *parent) : QWidget(parent) {
     setAttribute(Qt::WA_StyledBackground, true);
     setStyleSheet("ToolBar { background-color: #21618c !important; }");

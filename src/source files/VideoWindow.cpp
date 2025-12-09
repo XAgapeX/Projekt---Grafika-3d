@@ -19,8 +19,17 @@
 #include <QResizeEvent>
 #include <QDebug>
 
-
-
+/**
+ * @brief Konstruktor VideoWindow.
+ *
+ * Inicjalizuje odtwarzacz wideo, wyjście audio, odbiornik klatek,
+ * widget wyświetlający obraz oraz paski ToolBar i ControlBar.
+ *
+ * Ustawia połączenia sygnałów filtrów oraz suwaków jasności i kontrastu.
+ * Przetwarzanie klatek odbywa się w metodzie onFrameAvailable().
+ *
+ * @param parent rodzic widgetu
+ */
 VideoWindow::VideoWindow(QWidget *parent)
     : QWidget(parent),
       grayscaleActive(false),
@@ -68,6 +77,9 @@ VideoWindow::VideoWindow(QWidget *parent)
     connect(toolBar, &ToolBar::cartoonFilterClicked, this, &VideoWindow::applyCartoonFilter);
 }
 
+/**
+ * @brief Otwiera okno wyboru pliku i rozpoczyna odtwarzanie.
+ */
 void VideoWindow::loadVideo() {
     QFileDialog dialog(this);
     dialog.setWindowTitle("Wybierz plik wideo");
@@ -81,30 +93,65 @@ void VideoWindow::loadVideo() {
     }
 }
 
+/**
+ * @brief Przełącza filtr grayscale.
+ */
 void VideoWindow::applyGrayscaleFilter() {
     grayscaleActive = !grayscaleActive;
 }
 
+/**
+ * @brief Przełącza filtr Gaussian Blur.
+ */
 void VideoWindow::applyGaussianFilter() {
     gaussianActive = !gaussianActive;
 }
 
+/**
+ * @brief Przełącza filtr Sepia.
+ */
 void VideoWindow::applySepiaFilter() {
     sepiaActive = !sepiaActive;
 }
 
+/**
+ * @brief Przełącza filtr Negative.
+ */
 void VideoWindow::applyNegativeFilter() {
     negativeActive = !negativeActive;
 }
 
+/**
+ * @brief Przełącza filtr Sobel.
+ */
 void VideoWindow::applySobelFilter() {
     sobelActive = !sobelActive;
 }
 
+/**
+ * @brief Przełącza filtr Cartoon.
+ */
 void VideoWindow::applyCartoonFilter() {
     cartoonActive = !cartoonActive;
 }
 
+/**
+ * @brief Przetwarzanie klatki RGB poprzez filtry CUDA i wyświetlenie wyniku.
+ *
+ * Kolejność obróbki:
+ * 1. Jasność (CUDA)
+ * 2. Kontrast (CUDA)
+ * 3. Grayscale (CUDA)
+ * 4. Gaussian Blur (CUDA)
+ * 5. Sepia (CUDA)
+ * 6. Negative (CUDA)
+ * 7. Sobel (CUDA)
+ * 8. Cartoon (CUDA)
+ *
+ * Wynik jest zapisywany do lastFrame i skalowany do wymiarów videoLabel.
+ *
+ * @param frame klatka odebrana z QVideoSink
+ */
 void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
     if (!frame.isValid()) return;
 
@@ -135,12 +182,10 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
         processed = out;
     }
 
-    // --- GRAYSCALE ---
     if (grayscaleActive) {
         QImage grayY(img.width(), img.height(), QImage::Format_Grayscale8);
         QImage grayCb(img.width(), img.height(), QImage::Format_Grayscale8);
         QImage grayCr(img.width(), img.height(), QImage::Format_Grayscale8);
-
 
         applyGrayscaleCUDA(processed.bits(),
                            grayY.bits(),
@@ -150,11 +195,9 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
                            img.height(),
                            img.bytesPerLine());
 
-
         processed = grayY.convertToFormat(QImage::Format_RGB888);
     }
 
-    // --- GAUSSIAN ---
     if (gaussianActive) {
         QImage blurred(img.width(), img.height(), QImage::Format_RGB888);
         applyGaussianBlurCUDA(processed.bits(), blurred.bits(),
@@ -163,7 +206,6 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
         processed = blurred;
     }
 
-    // --- SEPIA ---
     if (sepiaActive) {
         QImage sepia(img.width(), img.height(), QImage::Format_RGB888);
         applySepiaCUDA(processed.bits(), sepia.bits(),
@@ -172,7 +214,6 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
         processed = sepia;
     }
 
-    // --- NEGATIVE ---
     if (negativeActive) {
         QImage negative(img.width(), img.height(), QImage::Format_RGB888);
         applyNegativeCUDA(processed.bits(), negative.bits(),
@@ -181,7 +222,6 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
         processed = negative;
     }
 
-    // --- SOBEL ---
     if (sobelActive) {
         QImage sobel(img.width(), img.height(), QImage::Format_RGB888);
         applySobelCUDA(processed.bits(), sobel.bits(),
@@ -189,7 +229,6 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
         processed = sobel;
     }
 
-    // --- CARTOON ---
     if (cartoonActive) {
         QImage cartoon(img.width(), img.height(), QImage::Format_RGB888);
         applyCartoonCUDA(processed.bits(), cartoon.bits(),
@@ -207,6 +246,13 @@ void VideoWindow::onFrameAvailable(const QVideoFrame &frame) {
     videoLabel->setPixmap(scaledPixmap);
 }
 
+/**
+ * @brief Dopasowuje obraz po zmianie rozmiaru okna.
+ *
+ * Skaluje lastFrame z zachowaniem proporcji.
+ *
+ * @param event zdarzenie zmiany rozmiaru
+ */
 void VideoWindow::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
     if (!lastFrame.isNull()) {

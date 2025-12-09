@@ -4,6 +4,14 @@
 class QPushButton;
 class VideoWindow;
 
+/**
+ * @class MainWindow
+ * @brief Główne okno aplikacji odtwarzacza wideo.
+ *
+ * Odpowiada za wyświetlanie ekranu startowego
+ * oraz za przełączanie do okna odtwarzania wideo (VideoWindow)
+ * za pomocą QStackedWidget.
+ */
 
 class MainWindow : public QWidget {
     Q_OBJECT
