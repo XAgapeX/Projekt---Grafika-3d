@@ -55,9 +55,6 @@ add_executable(PROJEKT2_0
         "src/source files/ControlBar.cpp"
         "src/header files/ControlBar.h"
 
-        "src/opencv/source files/SenderOpenCV.cpp"
-        "src/opencv/header files/SenderOpenCV.h"
-
         "src/cuda/grayscale.cuh"
         "src/cuda/brightness.cuh"
         "src/cuda/contrast.cuh"
